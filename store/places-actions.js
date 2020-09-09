@@ -5,10 +5,13 @@ import { insertPlace, fetchPlaces } from '../helpers/db';
 export const ADD_PLACE = 'ADD_PLACE';
 export const SET_PLACES = 'SET_PLACES';
 
-export const addPlace = (title, image) => {
+export const addPlace = (title, image, location) => {
 
     //redux thunk syntax
     return async dispatch => {
+
+        //In this area, you can use google api and get address. For this you need API_KEY
+        const address = 'Your latitude is ' + location.lat + ', and your longitude is ' + location.lng + ".";
 
         //"uri": "file:///data/user/0/host.exp.exponent/cache/ExperienceData/%2540anonymous%252Frn-native-device-feature-52488b1e-8155-4fae-bfb2-b588972a73c7/ImagePicker/146f2399-13b4-49d3-a1a2-2ec80c2a76bf.jpg"
         //Below returns 146f2399-13b4-49d3-a1a2-2ec80c2a76bf.jpg
@@ -21,7 +24,7 @@ export const addPlace = (title, image) => {
                 to: newPath
             });
 
-            const dbResult = await insertPlace(title, newPath, 'Dummy address', 15.6, 12.3);
+            const dbResult = await insertPlace(title, newPath, address, location.lat, location.lng);
             console.log(dbResult);
 
             dispatch({
@@ -29,7 +32,12 @@ export const addPlace = (title, image) => {
                 placeData: {
                     id: dbResult.insertId,
                     title: title,
-                    image: newPath
+                    image: newPath,
+                    address: address,
+                    coords: {
+                        lat: location.lat,
+                        lng: location.lng
+                    }
                 }
             });
         } catch (err) {
